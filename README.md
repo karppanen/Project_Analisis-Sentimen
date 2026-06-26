@@ -3,9 +3,10 @@
 Project ini dibuat untuk memenuhi penilaian tipe A pada mata kuliah terkait analisis sentimen. Sistem ini bertujuan untuk melakukan klasifikasi sentimen pada data teks menggunakan algoritma **K-Nearest Neighbor (KNN)** dengan bahasa pemrograman **PHP**.
 
 ## Anggota Kelompok
-- Adinda Kusuma Dewi (2312510338)
 - Muhammad Rifqi Fauzan (2311500553)
 - Fauzi Alfadhillah (2311501767)
+- Cantika Amalia (2312500354)
+- Adinda Kusuma Dewi (2312510338)
 
 ## Deskripsi Project
 
