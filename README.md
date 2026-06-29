@@ -5,8 +5,8 @@ Project ini dibuat untuk memenuhi penilaian tipe A pada mata kuliah terkait anal
 ## Anggota Kelompok
 - Muhammad Rifqi Fauzan (2311500553)
 - Fauzi Alfadhillah (2311501767)
-- Cantika Amalia (2312500354)
 - Adinda Kusuma Dewi (2312510338)
+- Cantika Amalia (2312500354)
 
 ## Deskripsi Project
 
