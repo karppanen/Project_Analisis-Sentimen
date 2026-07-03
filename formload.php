@@ -9,7 +9,6 @@
 <body class="bg-slate-100 text-slate-800">
 
     <div class="flex min-h-screen">
-
         <!-- Sidebar -->
         <aside class="w-64 bg-slate-900 text-white">
             <div class="p-6 border-b border-slate-700">
@@ -17,23 +16,23 @@
             </div>
 
             <nav class="p-4 space-y-2">
-                <a href="#" class="block px-4 py-3 rounded-lg bg-blue-600 font-medium">
+                <a href="formload.php" class="block px-4 py-3 rounded-lg bg-blue-600 font-medium">
                     Dashboard
                 </a>
 
-                <a href="preprocessing_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="proses/preprocessing_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Preprocessing
                 </a>
 
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="tf_idf_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Pembobotan TF-IDF
                 </a>
 
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="data_training_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Data Training
                 </a>
 
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="data_testing_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Data Testing
                 </a>
 

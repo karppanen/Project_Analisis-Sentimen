@@ -1,5 +1,5 @@
 <?php
-require 'db_config.php';
+require '../db_config.php';
 
 $message = '';
 $messageType = 'success';
@@ -378,7 +378,7 @@ try {
                 </div>
 
                 <div class="overflow-x-auto rounded-xl border border-slate-200">
-                    <table class="min-w-[1200px] w-full text-left text-sm">
+                    <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                             <tr>
                                 <th class="px-4 py-3">No</th>
