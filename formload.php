@@ -21,11 +21,7 @@
                     Dashboard
                 </a>
 
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                    Input Dataset
-                </a>
-
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="preprocessing_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Preprocessing
                 </a>
 
