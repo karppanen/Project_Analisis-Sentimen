@@ -24,27 +24,23 @@
                     Preprocessing
                 </a>
 
-                <a href="tf_idf_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="proses/tf-idf.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Pembobotan TF-IDF
                 </a>
 
-                <a href="data_training_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                    Data Training
+                <a href="proses/split-data.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                    Split Data
                 </a>
 
-                <a href="data_testing_kelompok4.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
-                    Data Testing
-                </a>
-
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="proses/klasifikasi_knn.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Klasifikasi KNN
                 </a>
 
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="proses/hasil_analisis.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Hasil Analisis
                 </a>
 
-                <a href="#" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
+                <a href="proses/laporan.php" class="block px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white">
                     Laporan
                 </a>
             </nav>
