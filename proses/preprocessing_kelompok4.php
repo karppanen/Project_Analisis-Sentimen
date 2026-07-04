@@ -322,7 +322,7 @@ try {
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-wide text-blue-600">Input Dataset & Preprocessing</p>
                         <h2 class="text-2xl font-bold text-slate-900 mt-1">Preprocessing Dataset KNN</h2>
-                        <p class="text-slate-500 mt-2">Upload CSV atau masukkan teks manual, lalu sistem langsung menyimpan hasil preprocessing ke tabel <span class="font-semibold text-slate-700">preprocessing_kelompok_knn</span>.</p>
+                        <p class="text-slate-500 mt-2">Upload CSV atau masukkan teks manual.</p>
                     </div>
                     <div class="rounded-xl bg-blue-50 px-5 py-4 text-right">
                         <p class="text-sm text-blue-700">Total Data</p>
