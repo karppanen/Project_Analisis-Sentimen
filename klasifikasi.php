@@ -1,6 +1,9 @@
 <?php
+session_start();
 require 'koneksidb.php';
 $menu_aktif = 'klasifikasi';
+
+$lastKUsed = $_SESSION['last_knn_k'] ?? null;
 
 // --- LOGIKA PAGINATION ---
 $limit = 50; 
@@ -25,17 +28,95 @@ $dataset = $stmtData->fetchAll();
     <meta charset="UTF-8">
     <title>Klasifikasi KNN - Analisis Sentimen</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Script untuk mengatur Modal Pop-up
+        async function bukaModal(idUji, teksUji, labelAsli, labelPrediksi) {
+            // Tampilkan Modal
+            document.getElementById('modalDetail').classList.remove('hidden');
+            document.getElementById('modalDetail').classList.add('flex');
+            
+            // Set Text Info Ulasan
+            document.getElementById('m-teks').innerText = teksUji;
+            document.getElementById('m-asli').innerText = labelAsli;
+            document.getElementById('m-prediksi').innerText = labelPrediksi || 'Belum dihitung';
+
+            // Kosongkan tabel sementara fetching
+            const tbody = document.getElementById('tbodyTetangga');
+            const alertContainer = document.getElementById('alertDefault');
+            
+            // Sembunyikan alert default saat loading
+            alertContainer.classList.add('hidden');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500">Loading data tetangga...</td></tr>';
+
+            if (!labelPrediksi) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500">Klasifikasi belum dijalankan untuk data ini.</td></tr>';
+                return;
+            }
+
+            try {
+                // Fetch data dari API backend
+                const response = await fetch(`api_get_tetangga.php?id=${idUji}`);
+                const data = await response.json();
+
+                tbody.innerHTML = '';
+                
+                // Cek apakah data tetangga KOSONG
+                if (data.length === 0) {
+                    if (labelPrediksi === 'Netral') {
+                        // Tampilkan Alert Penjelasan Default Baseline
+                        alertContainer.classList.remove('hidden');
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">Tidak ada kalkulasi jarak untuk data OOV (Out-of-Vocabulary).</td></tr>';
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500">Tidak ada data tetangga terdekat.</td></tr>';
+                    }
+                } else {
+                    // Render daftar tetangga seperti biasa
+                    data.forEach(item => {
+                        let badgeColor = 'bg-slate-100 text-slate-700';
+                        if (item.label === 'Positif') badgeColor = 'bg-blue-50 text-blue-700';
+                        if (item.label === 'Negatif') badgeColor = 'bg-red-50 text-red-700';
+
+                        const tr = `
+                            <tr class="hover:bg-slate-50 border-b border-slate-100">
+                                <td class="px-4 py-3 text-center text-slate-500 font-medium">${item.urutan}</td>
+                                <td class="px-4 py-3 text-slate-700 text-sm leading-relaxed">${item.teks_bersih}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="px-2 py-1 rounded text-xs font-semibold ${badgeColor}">${item.label}</span>
+                                </td>
+                                <td class="px-4 py-3 text-center font-mono text-indigo-600 text-sm">${parseFloat(item.score).toFixed(4)}</td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += tr;
+                    });
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Gagal mengambil data.</td></tr>';
+            }
+        }
+
+        function tutupModal() {
+            document.getElementById('modalDetail').classList.add('hidden');
+            document.getElementById('modalDetail').classList.remove('flex');
+        }
+    </script>
 </head>
 <body class="bg-slate-100 text-slate-800">
     <div class="flex min-h-screen">
         <?php include 'sidebar.php'; ?>
         
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-8 relative">
             <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 border-l-4 border-blue-600">
                 <h2 class="text-2xl font-bold text-slate-900">Klasifikasi K-Nearest Neighbor</h2>
                 <p class="text-slate-500 mt-2">
                     Tahap pengujian algoritma KNN menggunakan rumus kedekatan arah vektor <strong>Cosine Similarity</strong> pada 20% Data Uji.
                 </p>
+                <div class="mt-4 inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                    <?php if ($lastKUsed !== null): ?>
+                        Informasi klasifikasi terakhir: <span class="ml-1 font-semibold">K = <?= (int)$lastKUsed ?></span>
+                    <?php else: ?>
+                        Belum ada klasifikasi yang dijalankan.
+                    <?php endif; ?>
+                </div>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
@@ -45,7 +126,6 @@ $dataset = $stmtData->fetchAll();
                         <label class="block text-sm font-medium text-slate-700 mb-2">Nilai K (Tetangga)</label>
                         <input type="number" name="nilai_k" min="1" max="19" value="3" required step="2"
                             class="block w-full px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
-                        <p class="text-xs text-slate-400 mt-1">* Disarankan bilangan ganjil (3, 5, 7, dst)</p>
                     </div>
                     
                     <button type="submit" name="jalankan_knn" class="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2 whitespace-nowrap">
@@ -55,6 +135,7 @@ $dataset = $stmtData->fetchAll();
                         Jalankan Klasifikasi KNN
                     </button>
                 </form>
+                <p class="text-xs text-slate-400 mt-3">* Disarankan bilangan ganjil (3, 5, 7, dst)</p>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm p-6">
@@ -72,6 +153,7 @@ $dataset = $stmtData->fetchAll();
                                 <th class="px-4 py-3 w-32">Label Asli</th>
                                 <th class="px-4 py-3 w-32">Prediksi KNN</th>
                                 <th class="px-4 py-3 w-28">Status</th>
+                                <th class="px-4 py-3 w-28 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200">
@@ -106,11 +188,24 @@ $dataset = $stmtData->fetchAll();
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Salah</span>
                                             <?php endif; ?>
                                         </td>
+
+                                        <td class="px-4 py-3 align-top text-center">
+                                            <?php if (!empty($row['label_prediksi'])): ?>
+                                                <button onclick="bukaModal(<?= $row['id'] ?>, '<?= htmlspecialchars(addslashes($row['teks_bersih'])) ?>', '<?= $row['label'] ?>', '<?= $row['label_prediksi'] ?>')" 
+                                                    class="inline-flex items-center justify-center px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200 rounded text-xs font-semibold transition-colors">
+                                                    Lihat Detail
+                                                </button>
+                                            <?php else: ?>
+                                                <button disabled class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-100 text-slate-400 border border-slate-200 rounded text-xs font-semibold cursor-not-allowed">
+                                                    Lihat Detail
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+                                    <td colspan="6" class="px-4 py-8 text-center text-slate-500">
                                         Data uji belum disiapkan. Pastikan kamu sudah melakukan Split Data dan TF-IDF terlebih dahulu.
                                     </td>
                                 </tr>
@@ -162,5 +257,60 @@ $dataset = $stmtData->fetchAll();
             </div>
         </main>
     </div>
+
+    <div id="modalDetail" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-900">Rincian Perhitungan Cosine Similarity</h3>
+                <button onclick="tutupModal()" class="text-slate-400 hover:text-slate-700 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto">
+                <div class="mb-6 bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                    <p class="text-xs text-indigo-400 font-bold uppercase tracking-wider mb-1">Teks Data Uji</p>
+                    <p id="m-teks" class="text-indigo-900 font-medium mb-3 italic">"..."</p>
+                    <div class="flex gap-4">
+                        <div class="text-sm"><span class="text-slate-500">Label Asli:</span> <span id="m-asli" class="font-bold text-slate-700"></span></div>
+                        <div class="text-sm"><span class="text-slate-500">Prediksi Sistem:</span> <span id="m-prediksi" class="font-bold text-blue-700"></span></div>
+                    </div>
+                </div>
+
+                <div id="alertDefault" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <h4 class="font-bold text-amber-800 text-sm">Informasi Data OOV (Out-of-Vocabulary)</h4>
+                            <p class="text-xs text-amber-700 mt-1 leading-relaxed">
+                                Seluruh kata pada ulasan ini tidak ditemukan dalam kamus Data Latih (atau telah terhapus saat <em>preprocessing</em>). Karena tidak ada parameter matematis yang dapat dihitung untuk mencari tetangga, sistem secara otomatis memberikan label klasifikasi *fallback* ke <strong>"Netral"</strong> (mengikuti probabilitas kelas mayoritas pada dataset awal).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-slate-800 mb-3 text-sm">Daftar Tetangga Terdekat (K) Data Latih:</h4>
+                <div class="overflow-x-auto rounded-lg border border-slate-200">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-100 text-slate-700">
+                            <tr>
+                                <th class="px-4 py-2 w-16 text-center">Rank</th>
+                                <th class="px-4 py-2">Teks Latih (Tetangga)</th>
+                                <th class="px-4 py-2 w-28 text-center">Label</th>
+                                <th class="px-4 py-2 w-32 text-center">Score Cosine</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyTetangga" class="divide-y divide-slate-200">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 text-right">
+                <button onclick="tutupModal()" class="px-5 py-2 bg-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-300 transition-colors">Tutup</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

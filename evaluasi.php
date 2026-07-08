@@ -1,6 +1,9 @@
 <?php
+session_start();
 require 'koneksidb.php';
 $menu_aktif = 'evaluasi';
+
+$lastKUsed = $_SESSION['last_knn_k'] ?? null;
 
 // 1. Inisialisasi Kategori Kelas
 $classes = ['Positif', 'Negatif', 'Netral'];
@@ -89,6 +92,13 @@ $macro_f1 = ($sum_f1 / count($classes)) * 100;
                 <p class="text-slate-500 mt-2">
                     Mengukur tingkat keberhasilan algoritma KNN dalam melakukan klasifikasi sentimen menggunakan metode pengujian <strong>Confusion Matrix</strong>.
                 </p>
+                <div class="mt-4 inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                    <?php if ($lastKUsed !== null): ?>
+                        Parameter K terakhir yang dipakai: <span class="ml-1 font-semibold">K = <?= (int)$lastKUsed ?></span>
+                    <?php else: ?>
+                        Belum ada klasifikasi terakhir yang tersimpan.
+                    <?php endif; ?>
+                </div>
             </div>
 
             <?php if ($total_uji == 0): ?>

@@ -1,8 +1,11 @@
 <?php
+session_start();
 require 'koneksidb.php';
 
 // Definisikan menu mana yang lagi aktif
 $menu_aktif = 'dashboard';
+
+$lastKUsed = $_SESSION['last_knn_k'] ?? null;
 
 // Ambil data statistik dari database
 $stmtTotalDataset = $pdo->query("SELECT COUNT(*) FROM dataset_awal");
@@ -90,8 +93,15 @@ $hasilTerbaru = $stmtHasilTerbaru->fetchAll(PDO::FETCH_ASSOC);
                     Dashboard Utama
                 </h2>
                 <p class="text-slate-500 mt-2">
-                    Project UAs Analisis Sentimen
+                    Project UAS Analisis Sentimen
                 </p>
+                <div class="mt-4 inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                    <?php if ($lastKUsed !== null): ?>
+                        Klasifikasi terakhir menggunakan <span class="ml-1 font-semibold">K = <?= (int)$lastKUsed ?></span>
+                    <?php else: ?>
+                        Belum ada klasifikasi terakhir yang tercatat.
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- Cards -->
@@ -168,7 +178,7 @@ $hasilTerbaru = $stmtHasilTerbaru->fetchAll(PDO::FETCH_ASSOC);
                         <div class="w-10 h-10 mx-auto rounded-full bg-blue-600 text-white flex items-center justify-center font-bold mb-3">
                             4
                         </div>
-                        <h4 class="font-semibold text-blue-700">KNN</h4>
+                        <h4 class="font-semibold text-blue-700">KNN (Cosine Similarity)</h4>
                         <p class="text-sm text-slate-500 mt-2">
                             Klasifikasi berdasarkan tetangga terdekat.
                         </p>
@@ -178,7 +188,7 @@ $hasilTerbaru = $stmtHasilTerbaru->fetchAll(PDO::FETCH_ASSOC);
                         <div class="w-10 h-10 mx-auto rounded-full bg-blue-600 text-white flex items-center justify-center font-bold mb-3">
                             5
                         </div>
-                        <h4 class="font-semibold text-blue-700">Hasil Evaluasi</h4>
+                        <h4 class="font-semibold text-blue-700">Hasil Evaluasi (Confusion Matrix)</h4>
                         <p class="text-sm text-slate-500 mt-2">
                             Menampilkan performa model klasifikasi berdasarkan data uji.
                         </p>
@@ -263,7 +273,7 @@ $hasilTerbaru = $stmtHasilTerbaru->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <!-- Footer -->
             <div class="text-center text-sm text-slate-400 mt-8">
-                &copy; <?php echo date("Y"); ?> Sistem Analisis Sentimen - Algoritma KNN | UAS Keren
+                &copy; <?php echo date("Y"); ?> Sistem Analisis Sentimen - Algoritma KNN | Cosine Similarity
             </div>
 
         </main>
